@@ -1,4 +1,5 @@
 FROM ubuntu:14.04
+# LEDE 编译环境
 ADD aliyun.ubuntu14.04.sources.list /etc/apt/sources.list
 RUN dpkg --add-architecture i386&&\
         apt update&&\
