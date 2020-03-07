@@ -1,0 +1,172 @@
+From 4d9f253a1348f815c6a7b2c292295ba0846d74e9 Mon Sep 17 00:00:00 2001
+From: chenjr15 <chenjr15@live.cn>
+Date: Sat, 7 Mar 2020 09:04:59 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=8F=82=E7=85=A7=E5=B0=8F=E5=A8=B1C5=20?=
+ =?UTF-8?q?=E6=B7=BB=E5=8A=A0=E5=B0=8F=E5=A8=B1C3=E7=9A=84=E6=A8=A1?=
+ =?UTF-8?q?=E5=9D=97?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ target/linux/ramips/dts/mt7621_xiaoyu_xy-c3.dts    | 107 +++++++++++++++++++++
+ target/linux/ramips/image/mt7621.mk                |   8 ++
+ .../mt7621/base-files/etc/board.d/02_network       |   2 +
+ 3 files changed, 117 insertions(+)
+ create mode 100644 target/linux/ramips/dts/mt7621_xiaoyu_xy-c3.dts
+
+diff --git a/target/linux/ramips/dts/mt7621_xiaoyu_xy-c3.dts b/target/linux/ramips/dts/mt7621_xiaoyu_xy-c3.dts
+new file mode 100644
+index 00000000..ad62b9c9
+--- /dev/null
++++ b/target/linux/ramips/dts/mt7621_xiaoyu_xy-c3.dts
+@@ -0,0 +1,107 @@
++/dts-v1/;
++
++#include "mt7621.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	compatible = "xiaoyu,xy-c3", "mediatek,mt7621-soc";
++	model = "XiaoYu XY-C3";
++
++	aliases {
++		led-boot = &led_sys;
++		led-failsafe = &led_sys;
++		led-running = &led_sys;
++		led-upgrade = &led_sys;
++		label-mac-device = &ethernet;
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x1c000000>, <0x20000000 0x4000000>;
++	};
++
++	chosen {
++		bootargs = "console=ttyS0,57600";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		work {
++			label = "xy-c3:green:work";
++			gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
++		};
++
++		led_sys: sys {
++			label = "xy-c3:green:sys";
++			gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
++		};
++	};
++
++	keys {
++		compatible = "gpio-keys";
++
++		reset {
++			label = "reset";
++			gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_RESTART>;
++		};
++	};
++};
++
++&spi0 {
++	status = "okay";
++
++	flash@0 {
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <25000000>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "u-boot";
++				reg = <0x0 0x30000>;
++				read-only;
++			};
++
++			partition@30000 {
++				label = "u-boot-env";
++				reg = <0x30000 0x10000>;
++				read-only;
++			};
++
++			factory: partition@40000 {
++				label = "factory";
++				reg = <0x40000 0x10000>;
++				read-only;
++			};
++
++			partition@50000 {
++				compatible = "denx,uimage";
++				label = "firmware";
++				reg = <0x50000 0x1fb0000>;
++			};
++		};
++	};
++};
++
++&pcie {
++	status = "okay";
++};
++
++&ethernet {
++	mtd-mac-address = <&factory 0x4>;
++};
++
++&state_default {
++	gpio {
++		ralink,group = "uart3", "wdt";
++		ralink,function = "gpio";
++	};
++};
+diff --git a/target/linux/ramips/image/mt7621.mk b/target/linux/ramips/image/mt7621.mk
+index f41457da..a6bda291 100644
+--- a/target/linux/ramips/image/mt7621.mk
++++ b/target/linux/ramips/image/mt7621.mk
+@@ -882,6 +882,14 @@ define Device/xiaoyu_xy-c5
+ endef
+ TARGET_DEVICES += xiaoyu_xy-c5
+ 
++define Device/xiaoyu_xy-c3
++  IMAGE_SIZE := 32448k
++  DEVICE_VENDOR := XiaoYu
++  DEVICE_MODEL := XY-C3
++  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-usb3
++endef
++TARGET_DEVICES += xiaoyu_xy-c3
++
+ define Device/xzwifi_creativebox-v1
+   IMAGE_SIZE := 32448k
+   DEVICE_VENDOR := CreativeBox
+diff --git a/target/linux/ramips/mt7621/base-files/etc/board.d/02_network b/target/linux/ramips/mt7621/base-files/etc/board.d/02_network
+index 58605aca..8b2224e0 100755
+--- a/target/linux/ramips/mt7621/base-files/etc/board.d/02_network
++++ b/target/linux/ramips/mt7621/base-files/etc/board.d/02_network
+@@ -26,6 +26,7 @@ ramips_setup_interfaces()
+ 	unielec,u7621-06-16m|\
+ 	unielec,u7621-06-64m|\
+ 	xiaoyu,xy-c5|\
++	xiaoyu,xy-c3|\
+ 	xzwifi,creativebox-v1|\
+ 	youku,yk-l2|\
+ 	zbtlink,zbt-we1326|\
+@@ -228,6 +229,7 @@ ramips_setup_macs()
+ 	netgear,r6220|\
+ 	netgear,wndr3700-v5|\
+ 	xiaoyu,xy-c5)
++	xiaoyu,xy-c3)
+ 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x4)" 1)
+ 		;;
+ 	iodata,wn-ax1167gr2|\
+-- 
+2.11.0
+
