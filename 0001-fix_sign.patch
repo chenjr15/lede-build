@@ -1,0 +1,29 @@
+From 8993c2ba6ecfbf5139aaea0056cb8b6ab55f2ca2 Mon Sep 17 00:00:00 2001
+From: chenjr15 <chenjr15@live.cn>
+Date: Wed, 11 Mar 2020 11:21:47 +0800
+Subject: [PATCH] =?UTF-8?q?=E4=BF=AE=E5=A4=8D=E9=94=99=E8=AF=AF=E7=9A=84?=
+ =?UTF-8?q?=E7=AC=A6=E5=8F=B7=E9=85=8D=E7=BD=AE?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ target/linux/ramips/mt7621/base-files/etc/board.d/02_network | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/target/linux/ramips/mt7621/base-files/etc/board.d/02_network b/target/linux/ramips/mt7621/base-files/etc/board.d/02_network
+index 8b2224e0..c40e487a 100755
+--- a/target/linux/ramips/mt7621/base-files/etc/board.d/02_network
++++ b/target/linux/ramips/mt7621/base-files/etc/board.d/02_network
+@@ -228,7 +228,7 @@ ramips_setup_macs()
+ 	mtc,wr1201|\
+ 	netgear,r6220|\
+ 	netgear,wndr3700-v5|\
+-	xiaoyu,xy-c5)
++	xiaoyu,xy-c5|\
+ 	xiaoyu,xy-c3)
+ 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x4)" 1)
+ 		;;
+-- 
+2.11.0
+
